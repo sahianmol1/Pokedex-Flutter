@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pokedex/components/pokemon_card.dart';
 import 'package:pokedex/screens/pokemon_list_screen.dart';
 
 void main() {
@@ -19,16 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('PokeDex'),
-          backgroundColor: Color(0xFFD53A47),
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Color(0xFFD53A47),
-          ),
-        ),
-        body: PokemonList(),
-      ),
+      home: PokemonList(),
     );
   }
 }

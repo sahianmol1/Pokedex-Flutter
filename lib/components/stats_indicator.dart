@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 
-class StatsIndicators extends StatelessWidget {
+class StatsIndicators extends StatefulWidget {
   final String statText;
   final Color sliderColor;
-  final double sliderValue;
+  late double sliderValue;
+  final int statValue;
 
-  StatsIndicators(
-      {required this.sliderColor,
-      required this.sliderValue,
-      required this.statText});
+  StatsIndicators({
+    required this.sliderColor,
+    required this.sliderValue,
+    required this.statText,
+    required this.statValue,
+  });
+
+  @override
+  State<StatsIndicators> createState() => _StatsIndicatorsState();
+}
+
+class _StatsIndicatorsState extends State<StatsIndicators> {
+  double statValueLeftPadding() {
+    double padding = widget.statValue - 55.0;
+    if (padding < 0) {
+      padding = 0.0;
+    }
+    return padding;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +37,7 @@ class StatsIndicators extends StatelessWidget {
             width: 24.0,
           ),
           Text(
-            statText,
+            widget.statText,
             style: TextStyle(
               color: Colors.grey.shade300,
               fontWeight: FontWeight.bold,
@@ -33,21 +49,39 @@ class StatsIndicators extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(right: 24.0),
-              child: SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: sliderColor,
-                  trackHeight: 14.0,
-                  thumbShape: SliderComponentShape.noThumb,
-                  inactiveTrackColor: Colors.white,
-                  overlayShape: SliderComponentShape.noOverlay,
-                ),
-                child: Slider(
-                  onChanged: (newValue) {},
-                  value: sliderValue,
-                  min: 0,
-                  max: 300,
-                  label: '167',
-                ),
+              child: Stack(
+                children: [
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: widget.sliderColor,
+                      trackHeight: 14.0,
+                      thumbShape: SliderComponentShape.noThumb,
+                      inactiveTrackColor: Colors.white,
+                      overlayShape: SliderComponentShape.noOverlay,
+                      rangeTrackShape: RoundedRectRangeSliderTrackShape(),
+                    ),
+                    child: Slider(
+                      onChanged: (newValue) {
+                        widget.sliderValue = newValue;
+                        print(newValue);
+                      },
+                      value: widget.sliderValue,
+                      min: 0,
+                      max: 300,
+                      label: '167',
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: statValueLeftPadding()),
+                    child: Text(
+                      '${widget.statValue.toStringAsFixed(0)}/300',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
           ),
