@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pokedex/components/pokemon_card.dart';
-import 'package:pokedex/screens/pokemon_details.dart';
+import 'package:pokedex/network/pokemon_data.dart';
 import 'package:pokedex/utils/constants.dart';
 
 class PokemonList extends StatefulWidget {
@@ -12,9 +12,39 @@ class PokemonList extends StatefulWidget {
 }
 
 class _PokemonListState extends State<PokemonList> {
-  String imageUrl =
-      'https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png';
-  String name = 'pikachu';
+  var pokemonListData;
+  List<dynamic> pokemonList = [];
+
+  void getPokemonList() async {
+    PokemonData list = PokemonData();
+    pokemonListData = await list.getPokemonList();
+
+    setState(() {
+      pokemonList = pokemonListData['results'];
+    });
+  }
+
+  String getPokemonImage(String url) {
+    var imageUrl;
+
+    List<String> split = url.split('/');
+    split.removeAt(split.length - 1);
+    String index = split.last;
+
+    setState(() {
+      imageUrl =
+          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$index.png';
+    });
+
+    return imageUrl;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPokemonList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,49 +63,18 @@ class _PokemonListState extends State<PokemonList> {
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: GridView.count(
-            crossAxisCount: 2,
+            childAspectRatio: 1 / 1,
             mainAxisSpacing: 8.0,
             crossAxisSpacing: 8.0,
-            childAspectRatio: 1.05 / 1,
-            children: List.generate(
-              10,
-              (index) => PokemonCard(
-                onCardClick: () {
-                  Navigator.push(
-                    context,
-                    // MaterialPageRoute(
-                    //   builder: (context) => PokemonDetailsScreen(
-                    //     imageUrl: imageUrl,
-                    //     name: name,
-                    //     index: index.toString(),
-                    //   ),
-                    // ),
-                    PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 800),
-                        reverseTransitionDuration: Duration(milliseconds: 800),
-                        pageBuilder: (_, __, ___) => PokemonDetailsScreen(
-                              imageUrl: imageUrl,
-                              name: name,
-                              index: index.toString(),
-                            ),
-                        transitionsBuilder: (_,
-                            Animation<double> animation,
-                            Animation<double> secondaryAnimation,
-                            Widget child) {
-                          animation = CurvedAnimation(
-                              parent: animation, curve: Curves.easeInExpo);
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        }),
-                  );
-                },
-                name: name,
-                imageUrl: imageUrl,
+            shrinkWrap: true,
+            crossAxisCount: 2,
+            children: List.generate(pokemonList.length, (index) {
+              return PokemonCard(
+                name: pokemonList[index]['name'],
+                imageUrl: getPokemonImage(pokemonList[index]['url']),
                 index: index.toString(),
-              ),
-            ),
+              );
+            }),
           ),
         ),
       ),

@@ -177,9 +177,9 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                 const SizedBox(
                   height: 25.0,
                 ),
-                const Center(
+                Center(
                   child: Text(
-                    'pikachu',
+                    name,
                     style: TextStyle(fontSize: 38.0, color: Colors.white),
                   ),
                 ),
