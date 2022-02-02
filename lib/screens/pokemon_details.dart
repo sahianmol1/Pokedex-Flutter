@@ -8,12 +8,17 @@ import 'package:pokedex/components/stats_indicator.dart';
 import 'package:pokedex/utils/constants.dart';
 
 class PokemonDetailsScreen extends StatefulWidget {
-  PokemonDetailsScreen(
-      {required this.imageUrl, required this.name, required this.index});
+  PokemonDetailsScreen({
+    required this.imageUrl,
+    required this.name,
+    required this.index,
+    required this.dominantColor,
+  });
 
   String imageUrl;
   String name;
   String index;
+  Color dominantColor;
 
   @override
   _PokemonDetailsScreenState createState() => _PokemonDetailsScreenState();
@@ -49,8 +54,9 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
     );
 
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
-    tweenAnimation = ColorTween(begin: Color(0xFFD53A47), end: kColorElectric)
-        .animate(controller);
+    tweenAnimation =
+        ColorTween(begin: Color(0xFFD53A47), end: widget.dominantColor)
+            .animate(controller);
     controller.forward();
     animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -136,9 +142,9 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                   background: Hero(
                     tag: 'pokemon_container$index',
                     child: Container(
-                      decoration: const BoxDecoration(
-                        color: kColorElectric,
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: widget.dominantColor,
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(50.0),
                           bottomRight: Radius.circular(50.0),
                         ),
