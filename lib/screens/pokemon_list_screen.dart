@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pokedex/components/pokemon_card.dart';
 import 'package:pokedex/network/pokemon_data.dart';
 import 'package:pokedex/utils/constants.dart';
@@ -14,13 +15,18 @@ class PokemonList extends StatefulWidget {
 class _PokemonListState extends State<PokemonList> {
   var pokemonListData;
   List<dynamic> pokemonList = [];
+  bool showSpinner = false;
 
   void getPokemonList() async {
+    setState(() {
+      showSpinner = true;
+    });
     PokemonData list = PokemonData();
     pokemonListData = await list.getPokemonList();
 
     setState(() {
       pokemonList = pokemonListData['results'];
+      showSpinner = false;
     });
   }
 
@@ -50,31 +56,45 @@ class _PokemonListState extends State<PokemonList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('PokeDex'),
-        backgroundColor: Color(0xFFD53A47),
-        systemOverlayStyle: SystemUiOverlayStyle(
+        title: const Text('PokeDex'),
+        backgroundColor: const Color(0xFFD53A47),
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Color(0xFFD53A47),
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          color: kColorBackground,
+      body: ModalProgressHUD(
+        color: kColorBackground,
+        progressIndicator: const CircularProgressIndicator(
+          color: Color(0xFFD53A47),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: GridView.count(
-            childAspectRatio: 1 / 1,
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 8.0,
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            children: List.generate(pokemonList.length, (index) {
-              return PokemonCard(
-                name: pokemonList[index]['name'],
-                imageUrl: getPokemonImage(pokemonList[index]['url']),
-                index: index.toString(),
-              );
-            }),
+        inAsyncCall: showSpinner,
+        child: Container(
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            color: kColorBackground,
+          ),
+          child: RawScrollbar(
+            thumbColor: Color(0xFFD53A47),
+            isAlwaysShown: true,
+            thickness: 4.0,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: GridView.count(
+                childAspectRatio: 1 / 1,
+                mainAxisSpacing: 8.0,
+                crossAxisSpacing: 8.0,
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                children: List.generate(pokemonList.length, (index) {
+                  return PokemonCard(
+                    name: pokemonList[index]['name'],
+                    imageUrl: getPokemonImage(pokemonList[index]['url']),
+                    index: index.toString(),
+                  );
+                }),
+              ),
+            ),
           ),
         ),
       ),
