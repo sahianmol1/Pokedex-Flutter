@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:pokedex/components/height_weight_card.dart';
 import 'package:pokedex/components/pokemon_type_card.dart';
 import 'package:pokedex/components/stats_indicator.dart';
+import 'package:pokedex/network/pokemon_data.dart';
 import 'package:pokedex/utils/constants.dart';
 
 class PokemonDetailsScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class PokemonDetailsScreen extends StatefulWidget {
 
   String imageUrl;
   String name;
-  String index;
+  int index;
   Color dominantColor;
 
   @override
@@ -39,8 +40,26 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
 
   late String imageUrl;
   late String name;
-  late String index;
+  late int index;
   bool backPressed = false;
+
+  String pokemonHeight = '';
+  String pokemonWeight = '';
+  var pokemonTypeFromNetwork;
+  List<dynamic> pokemonTypeList = [];
+
+  void getPokemonDetails(int id) async {
+    PokemonData data = PokemonData();
+    var pokemonDetails = await data.getPokemonDetails(id.toString());
+    var tempheight = pokemonDetails['height'];
+    var tempWeight = pokemonDetails['weight'];
+    pokemonTypeFromNetwork = pokemonDetails['types'];
+    setState(() {
+      pokemonHeight = (tempheight / 10).toString();
+      pokemonWeight = (tempWeight / 10).toString();
+      pokemonTypeList = pokemonTypeFromNetwork;
+    });
+  }
 
   @override
   void initState() {
@@ -49,6 +68,8 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
     name = widget.name;
     index = widget.index;
 
+    getPokemonDetails(index);
+
     controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -56,7 +77,7 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
 
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
     tweenAnimation =
-        ColorTween(begin: Color(0xFFD53A47), end: widget.dominantColor)
+        ColorTween(begin: const Color(0xFFD53A47), end: widget.dominantColor)
             .animate(controller);
     controller.forward();
     animation.addStatusListener((status) {
@@ -110,8 +131,9 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
             return [
               SliverAppBar(
                 systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarColor:
-                      backPressed ? Color(0xFFD53A47) : tweenAnimation.value,
+                  statusBarColor: backPressed
+                      ? const Color(0xFFD53A47)
+                      : tweenAnimation.value,
                 ),
                 backgroundColor: kColorBackground,
                 expandedHeight: 250.0,
@@ -123,16 +145,16 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                 },
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       'Pokedex',
                       style: TextStyle(
                         color: Colors.white,
                       ),
                     ),
                     Text(
-                      '#025',
-                      style: TextStyle(
+                      (index < 10) ? '#00$index' : '#0$index',
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
@@ -187,7 +209,7 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                 Center(
                   child: Text(
                     name,
-                    style: TextStyle(fontSize: 38.0, color: Colors.white),
+                    style: const TextStyle(fontSize: 38.0, color: Colors.white),
                   ),
                 ),
                 const SizedBox(
@@ -199,9 +221,11 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return PokemonType();
+                        return PokemonType(
+                          type: pokemonTypeList[index]['type']['name'],
+                        );
                       },
-                      itemCount: 1,
+                      itemCount: pokemonTypeList.length,
                       scrollDirection: Axis.horizontal,
                     ),
                   ),
@@ -213,11 +237,11 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     HeightAndWeightCard(
-                      weightOrHeightValue: "90.5 KG",
+                      weightOrHeightValue: "$pokemonWeight KG",
                       subtitleText: 'weight',
                     ),
                     HeightAndWeightCard(
-                      weightOrHeightValue: '1.7 M',
+                      weightOrHeightValue: '$pokemonHeight M',
                       subtitleText: 'height',
                     ),
                   ],

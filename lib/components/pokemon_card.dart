@@ -12,7 +12,7 @@ class PokemonCard extends StatefulWidget {
 
   final String imageUrl;
   final String name;
-  String index;
+  int index;
 
   @override
   State<PokemonCard> createState() => _PokemonCardState();
@@ -51,7 +51,7 @@ class _PokemonCardState extends State<PokemonCard> {
                 pageBuilder: (_, __, ___) => PokemonDetailsScreen(
                       imageUrl: widget.imageUrl,
                       name: widget.name,
-                      index: widget.index.toString(),
+                      index: widget.index,
                       dominantColor: snapshot.data?.dominantColor?.color ??
                           const Color(0xFF424242),
                     ),

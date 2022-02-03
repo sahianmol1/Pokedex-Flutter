@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PokemonType extends StatelessWidget {
-  const PokemonType({
-    Key? key,
-  }) : super(key: key);
+  var type;
+  PokemonType({required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +13,11 @@ class PokemonType extends StatelessWidget {
           color: Colors.red,
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 32.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 32.0),
           child: Text(
-            'water',
-            style: TextStyle(
+            type,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18.0,
             ),

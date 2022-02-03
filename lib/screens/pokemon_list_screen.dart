@@ -90,7 +90,7 @@ class _PokemonListState extends State<PokemonList> {
                   return PokemonCard(
                     name: pokemonList[index]['name'],
                     imageUrl: getPokemonImage(pokemonList[index]['url']),
-                    index: index.toString(),
+                    index: index + 1,
                   );
                 }),
               ),

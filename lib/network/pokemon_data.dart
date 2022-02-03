@@ -8,6 +8,13 @@ class PokemonData {
     return pokemonList;
   }
 
+  Future<dynamic> getPokemonDetails(String id) async {
+    String url = '${baseURL}pokemon/$id';
+    NetworkHelper helper = NetworkHelper(url: url);
+    var pokemonDetails = await helper.getDataFromNetwork();
+    return pokemonDetails;
+  }
+
   void getPokemonImage(String pokemonIndex) {}
 }
 
