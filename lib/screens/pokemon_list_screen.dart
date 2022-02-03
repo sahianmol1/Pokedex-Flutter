@@ -31,7 +31,7 @@ class _PokemonListState extends State<PokemonList> {
   }
 
   String getPokemonImage(String url) {
-    var imageUrl;
+    String imageUrl = '';
 
     List<String> split = url.split('/');
     split.removeAt(split.length - 1);
@@ -74,7 +74,7 @@ class _PokemonListState extends State<PokemonList> {
             color: kColorBackground,
           ),
           child: RawScrollbar(
-            thumbColor: Color(0xFFD53A47),
+            thumbColor: const Color(0xFFD53A47),
             isAlwaysShown: true,
             thickness: 4.0,
             interactive: true,

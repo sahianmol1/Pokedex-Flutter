@@ -9,11 +9,12 @@ import 'package:pokedex/utils/constants.dart';
 
 class PokemonDetailsScreen extends StatefulWidget {
   PokemonDetailsScreen({
+    Key? key,
     required this.imageUrl,
     required this.name,
     required this.index,
     required this.dominantColor,
-  });
+  }) : super(key: key);
 
   String imageUrl;
   String name;

@@ -4,8 +4,9 @@ class HeightAndWeightCard extends StatelessWidget {
   final String weightOrHeightValue;
   final String subtitleText;
 
-  HeightAndWeightCard(
-      {required this.subtitleText, required this.weightOrHeightValue});
+  const HeightAndWeightCard(
+      {Key? key, required this.subtitleText, required this.weightOrHeightValue})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

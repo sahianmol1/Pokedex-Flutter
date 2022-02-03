@@ -2,7 +2,7 @@ import 'package:pokedex/network/NetworkHelper.dart';
 
 class PokemonData {
   Future<dynamic> getPokemonList() async {
-    String url = '${BASE_URL}pokemon/?offset=0&limit=100';
+    String url = '${baseURL}pokemon/?offset=0&limit=100';
     NetworkHelper helper = NetworkHelper(url: url);
     var pokemonList = await helper.getDataFromNetwork();
     return pokemonList;
@@ -11,4 +11,4 @@ class PokemonData {
   void getPokemonImage(String pokemonIndex) {}
 }
 
-const BASE_URL = 'https://pokeapi.co/api/v2/';
+const String baseURL = 'https://pokeapi.co/api/v2/';

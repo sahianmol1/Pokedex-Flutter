@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class StatsIndicators extends StatefulWidget {
@@ -7,11 +8,12 @@ class StatsIndicators extends StatefulWidget {
   final int statValue;
 
   StatsIndicators({
+    Key? key,
     required this.sliderColor,
     required this.sliderValue,
     required this.statText,
     required this.statValue,
-  });
+  }) : super(key: key);
 
   @override
   State<StatsIndicators> createState() => _StatsIndicatorsState();
@@ -29,7 +31,7 @@ class _StatsIndicatorsState extends State<StatsIndicators> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -58,12 +60,14 @@ class _StatsIndicatorsState extends State<StatsIndicators> {
                       thumbShape: SliderComponentShape.noThumb,
                       inactiveTrackColor: Colors.white,
                       overlayShape: SliderComponentShape.noOverlay,
-                      rangeTrackShape: RoundedRectRangeSliderTrackShape(),
+                      rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
                     ),
                     child: Slider(
                       onChanged: (newValue) {
                         widget.sliderValue = newValue;
-                        print(newValue);
+                        if (kDebugMode) {
+                          print(newValue);
+                        }
                       },
                       value: widget.sliderValue,
                       min: 0,
@@ -75,7 +79,7 @@ class _StatsIndicatorsState extends State<StatsIndicators> {
                     padding: EdgeInsets.only(left: statValueLeftPadding()),
                     child: Text(
                       '${widget.statValue.toStringAsFixed(0)}/300',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12.0,
                       ),

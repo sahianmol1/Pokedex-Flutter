@@ -2,40 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:pokedex/screens/pokemon_details.dart';
 
-class PokemonCard extends StatelessWidget {
+class PokemonCard extends StatefulWidget {
   PokemonCard(
-      {required this.imageUrl, required this.name, required this.index});
+      {Key? key,
+      required this.imageUrl,
+      required this.name,
+      required this.index})
+      : super(key: key);
 
   final String imageUrl;
   final String name;
   String index;
 
+  @override
+  State<PokemonCard> createState() => _PokemonCardState();
+}
+
+class _PokemonCardState extends State<PokemonCard> {
   late PaletteGenerator paletteGenerator;
+
+  late Future<PaletteGenerator> paletteFuture;
 
   Future<PaletteGenerator> updatePaletteGenerator() async {
     paletteGenerator = await PaletteGenerator.fromImageProvider(
-      Image.network(imageUrl).image,
+      Image.network(widget.imageUrl).image,
     );
     return paletteGenerator;
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    paletteFuture = updatePaletteGenerator();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<PaletteGenerator>(
-      future: updatePaletteGenerator(),
+      future: paletteFuture,
       builder: (context, snapshot) => GestureDetector(
         onTap: () {
           Navigator.push(
             context,
             PageRouteBuilder(
-                transitionDuration: Duration(milliseconds: 800),
-                reverseTransitionDuration: Duration(milliseconds: 800),
+                transitionDuration: const Duration(milliseconds: 800),
+                reverseTransitionDuration: const Duration(milliseconds: 800),
                 pageBuilder: (_, __, ___) => PokemonDetailsScreen(
-                      imageUrl: imageUrl,
-                      name: name,
-                      index: index.toString(),
+                      imageUrl: widget.imageUrl,
+                      name: widget.name,
+                      index: widget.index.toString(),
                       dominantColor: snapshot.data?.dominantColor?.color ??
-                          Color(0xFF424242),
+                          const Color(0xFF424242),
                     ),
                 transitionsBuilder: (_, Animation<double> animation,
                     Animation<double> secondaryAnimation, Widget child) {
@@ -49,11 +67,12 @@ class PokemonCard extends StatelessWidget {
           );
         },
         child: Hero(
-          tag: 'pokemon_container$index',
+          tag: 'pokemon_container${widget.index}',
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
-              color: snapshot.data?.dominantColor?.color ?? Color(0xFF424242),
+              color: snapshot.data?.dominantColor?.color ??
+                  const Color(0xFF424242),
             ),
             child: GridTile(
               child: Align(
@@ -62,7 +81,7 @@ class PokemonCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Image(
                     alignment: Alignment.topCenter,
-                    image: NetworkImage(imageUrl),
+                    image: NetworkImage(widget.imageUrl),
                     height: 135.0,
                     width: 135.0,
                   ),
@@ -71,7 +90,7 @@ class PokemonCard extends StatelessWidget {
               footer: Padding(
                 padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
                 child: Text(
-                  name,
+                  widget.name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
