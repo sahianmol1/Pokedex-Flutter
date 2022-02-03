@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pokedex/components/height_weight_card.dart';
 import 'package:pokedex/components/pokemon_type_card.dart';
 import 'package:pokedex/components/stats_indicator.dart';
@@ -42,6 +43,7 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
   late String name;
   late int index;
   bool backPressed = false;
+  bool showSpinner = false;
 
   String pokemonHeight = '';
   String pokemonWeight = '';
@@ -49,6 +51,9 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
   List<dynamic> pokemonTypeList = [];
 
   void getPokemonDetails(int id) async {
+    setState(() {
+      showSpinner = true;
+    });
     PokemonData data = PokemonData();
     var pokemonDetails = await data.getPokemonDetails(id.toString());
     var tempheight = pokemonDetails['height'];
@@ -58,6 +63,7 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
       pokemonHeight = (tempheight / 10).toString();
       pokemonWeight = (tempWeight / 10).toString();
       pokemonTypeList = pokemonTypeFromNetwork;
+      showSpinner = false;
     });
   }
 
@@ -196,102 +202,106 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
               ),
             ];
           },
-          body: DecoratedBox(
-            decoration: const BoxDecoration(
-              color: kColorBackground,
-            ),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                const SizedBox(
-                  height: 25.0,
-                ),
-                Center(
-                  child: Text(
-                    name,
-                    style: const TextStyle(fontSize: 38.0, color: Colors.white),
+          body: ModalProgressHUD(
+            inAsyncCall: showSpinner,
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: kColorBackground,
+              ),
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  const SizedBox(
+                    height: 25.0,
                   ),
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                Center(
-                  child: SizedBox(
-                    height: 45.0,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return PokemonType(
-                          type: pokemonTypeList[index]['type']['name'],
-                        );
-                      },
-                      itemCount: pokemonTypeList.length,
-                      scrollDirection: Axis.horizontal,
+                  Center(
+                    child: Text(
+                      name,
+                      style:
+                          const TextStyle(fontSize: 38.0, color: Colors.white),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    HeightAndWeightCard(
-                      weightOrHeightValue: "$pokemonWeight KG",
-                      subtitleText: 'weight',
-                    ),
-                    HeightAndWeightCard(
-                      weightOrHeightValue: '$pokemonHeight M',
-                      subtitleText: 'height',
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 25.0,
-                ),
-                const Center(
-                  child: Text(
-                    'Base Stats',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.w800),
+                  const SizedBox(
+                    height: 15.0,
                   ),
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                StatsIndicators(
-                  sliderColor: const Color(0xFFEB1555),
-                  sliderValue: animation.value * hpRandom,
-                  statValue: hpRandom,
-                  statText: 'HP1',
-                ),
-                StatsIndicators(
-                  sliderColor: Colors.orange.shade400,
-                  sliderValue: animation.value * atkRandom,
-                  statValue: atkRandom,
-                  statText: 'ATK',
-                ),
-                StatsIndicators(
-                  sliderColor: Colors.blueAccent,
-                  sliderValue: animation.value * defRandom,
-                  statValue: defRandom,
-                  statText: 'DEF',
-                ),
-                StatsIndicators(
-                  sliderColor: Colors.blueGrey,
-                  sliderValue: animation.value * spdRandom,
-                  statValue: spdRandom,
-                  statText: 'SPD',
-                ),
-                StatsIndicators(
-                  sliderColor: Colors.green.shade600,
-                  sliderValue: animation.value * expRandom,
-                  statValue: expRandom,
-                  statText: 'EXP',
-                ),
-              ],
+                  Center(
+                    child: SizedBox(
+                      height: 45.0,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return PokemonType(
+                            type: pokemonTypeList[index]['type']['name'],
+                          );
+                        },
+                        itemCount: pokemonTypeList.length,
+                        scrollDirection: Axis.horizontal,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      HeightAndWeightCard(
+                        weightOrHeightValue: "$pokemonWeight KG",
+                        subtitleText: 'weight',
+                      ),
+                      HeightAndWeightCard(
+                        weightOrHeightValue: '$pokemonHeight M',
+                        subtitleText: 'height',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 25.0,
+                  ),
+                  const Center(
+                    child: Text(
+                      'Base Stats',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  StatsIndicators(
+                    sliderColor: const Color(0xFFEB1555),
+                    sliderValue: animation.value * hpRandom,
+                    statValue: hpRandom,
+                    statText: 'HP1',
+                  ),
+                  StatsIndicators(
+                    sliderColor: Colors.orange.shade400,
+                    sliderValue: animation.value * atkRandom,
+                    statValue: atkRandom,
+                    statText: 'ATK',
+                  ),
+                  StatsIndicators(
+                    sliderColor: Colors.blueAccent,
+                    sliderValue: animation.value * defRandom,
+                    statValue: defRandom,
+                    statText: 'DEF',
+                  ),
+                  StatsIndicators(
+                    sliderColor: Colors.blueGrey,
+                    sliderValue: animation.value * spdRandom,
+                    statValue: spdRandom,
+                    statText: 'SPD',
+                  ),
+                  StatsIndicators(
+                    sliderColor: Colors.green.shade600,
+                    sliderValue: animation.value * expRandom,
+                    statValue: expRandom,
+                    statText: 'EXP',
+                  ),
+                ],
+              ),
             ),
           ),
         ),

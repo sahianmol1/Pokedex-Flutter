@@ -96,6 +96,7 @@ class _PokemonCardState extends State<PokemonCard> {
                     color: Colors.white,
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ),
