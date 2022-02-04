@@ -30,21 +30,6 @@ class _PokemonListState extends State<PokemonList> {
     });
   }
 
-  String getPokemonImage(String url) {
-    String imageUrl = '';
-
-    List<String> split = url.split('/');
-    split.removeAt(split.length - 1);
-    String index = split.last;
-
-    setState(() {
-      imageUrl =
-          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$index.png';
-    });
-
-    return imageUrl;
-  }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -80,19 +65,22 @@ class _PokemonListState extends State<PokemonList> {
             interactive: true,
             child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: GridView.count(
-                childAspectRatio: 1 / 1,
-                mainAxisSpacing: 8.0,
-                crossAxisSpacing: 8.0,
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                children: List.generate(pokemonList.length, (index) {
+              child: GridView.builder(
+                addAutomaticKeepAlives: true,
+                itemCount: pokemonList.length,
+                itemBuilder: (BuildContext context, int index) {
                   return PokemonCard(
+                    key: UniqueKey(),
                     name: pokemonList[index]['name'],
-                    imageUrl: getPokemonImage(pokemonList[index]['url']),
                     index: index + 1,
                   );
-                }),
+                },
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1 / 1,
+                  mainAxisSpacing: 8.0,
+                  crossAxisSpacing: 8.0,
+                ),
               ),
             ),
           ),

@@ -3,101 +3,112 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:pokedex/screens/pokemon_details.dart';
 
 class PokemonCard extends StatefulWidget {
-  PokemonCard(
-      {Key? key,
-      required this.imageUrl,
-      required this.name,
-      required this.index})
-      : super(key: key);
+  const PokemonCard({
+    Key? key,
+    required this.name,
+    required this.index,
+  }) : super(key: key);
 
-  final String imageUrl;
   final String name;
-  int index;
+  final int index;
 
   @override
   State<PokemonCard> createState() => _PokemonCardState();
 }
 
 class _PokemonCardState extends State<PokemonCard> {
-  late PaletteGenerator paletteGenerator;
+  String imageUrl = '';
 
-  late Future<PaletteGenerator> paletteFuture;
+  void getPokemonImage(int index) {
+    // List<String> split = url.split('/');
+    // split.removeAt(split.length - 1);
+    // String index = split.last;
 
-  Future<PaletteGenerator> updatePaletteGenerator() async {
-    paletteGenerator = await PaletteGenerator.fromImageProvider(
-      Image.network(widget.imageUrl).image,
+    setState(() {
+      imageUrl =
+          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$index.png';
+    });
+
+    getPokemonCardColor();
+  }
+
+  Color? pokemonCardColor;
+
+  void getPokemonCardColor() async {
+    PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      Image.network(imageUrl).image,
     );
-    return paletteGenerator;
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      pokemonCardColor = paletteGenerator.dominantColor?.color;
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
+    getPokemonImage(widget.index);
     super.initState();
-    paletteFuture = updatePaletteGenerator();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<PaletteGenerator>(
-      future: paletteFuture,
-      builder: (context, snapshot) => GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-                transitionDuration: const Duration(milliseconds: 800),
-                reverseTransitionDuration: const Duration(milliseconds: 800),
-                pageBuilder: (_, __, ___) => PokemonDetailsScreen(
-                      imageUrl: widget.imageUrl,
-                      name: widget.name,
-                      index: widget.index,
-                      dominantColor: snapshot.data?.dominantColor?.color ??
-                          const Color(0xFF424242),
-                    ),
-                transitionsBuilder: (_, Animation<double> animation,
-                    Animation<double> secondaryAnimation, Widget child) {
-                  animation = CurvedAnimation(
-                      parent: animation, curve: Curves.easeInExpo);
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                }),
-          );
-        },
-        child: Hero(
-          tag: 'pokemon_container${widget.index}',
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              color: snapshot.data?.dominantColor?.color ??
-                  const Color(0xFF424242),
-            ),
-            child: GridTile(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Image(
-                    alignment: Alignment.topCenter,
-                    image: NetworkImage(widget.imageUrl),
-                    height: 135.0,
-                    width: 135.0,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+              transitionDuration: const Duration(milliseconds: 800),
+              reverseTransitionDuration: const Duration(milliseconds: 800),
+              pageBuilder: (_, __, ___) => PokemonDetailsScreen(
+                    imageUrl: imageUrl,
+                    name: widget.name,
+                    index: widget.index,
+                    dominantColor: pokemonCardColor ?? const Color(0xFF424242),
                   ),
+              transitionsBuilder: (_, Animation<double> animation,
+                  Animation<double> secondaryAnimation, Widget child) {
+                animation = CurvedAnimation(
+                    parent: animation, curve: Curves.easeInExpo);
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              }),
+        );
+      },
+      child: Hero(
+        tag: 'pokemon_container${widget.index}',
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            color: pokemonCardColor ?? const Color(0xFF424242),
+          ),
+          child: GridTile(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Image(
+                  alignment: Alignment.topCenter,
+                  image: NetworkImage(imageUrl),
+                  height: 135.0,
+                  width: 135.0,
                 ),
               ),
-              footer: Padding(
-                padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
-                child: Text(
-                  widget.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.none,
-                  ),
+            ),
+            footer: Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+              child: Text(
+                widget.name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.none,
                 ),
               ),
             ),

@@ -86,16 +86,10 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
         ColorTween(begin: const Color(0xFFD53A47), end: widget.dominantColor)
             .animate(controller);
     controller.forward();
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        print('completed');
-      }
-    });
+    animation.addStatusListener((status) {});
 
     controller.addListener(() {
-      setState(() {
-        print(controller.value);
-      });
+      setState(() {});
     });
 
     animation.addListener(() {
